@@ -1,78 +1,168 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import defaultLogo from '../../assets/images/logos/2525.jpg';
-import {TextField } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  MDBCol,
+  MDBContainer,
+  MDBRow,
+  MDBCard,
+  MDBCardText,
+  MDBCardBody,
+  MDBCardImage,
+  MDBListGroup,
+  MDBListGroupItem
+} from 'mdb-react-ui-kit';
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router';
+import axios from 'axios';
+import AjouteMap from './AjouteMap';
+
+
 function Profil() {
-  const [name, setName] = useState("Nom du Restaurant");
-  const [logo, setLogo] = useState(defaultLogo); 
-  const [theme, setTheme] = useState("light");
+let navigate = useNavigate();
+const[log,setLog]=useState(null)
+  const [user, setUser] = useState({
+    name: "",
+    address: "",
+  });
 
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  }
+  const { name, address } = user;
 
-  const handleLogoChange = (event) => {
+  const onInputChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+  const handleImageChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
+
     reader.onloadend = () => {
-      setLogo(reader.result);
-    }
+      setLog(reader.result);
+    };
+
     reader.readAsDataURL(file);
-  }
+  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      name: name,
+      address:address,
+      log: log,
+      userId: 3,
+    };
+    await axios.post("http://localhost:8080/restaurant-configuration/restaurant/create", data);
+    navigate("/");
+  };
+  const [restaurant, setRestaurant] = useState([])
+  useEffect(() => {
+      axios.get('http://localhost:8080/restaurant-configuration/restaurant/getRestaurantById/${userId}')
+        .then(response => {
+          setRestaurant(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }, []);
+  
+    const convertImage = (base64Image) => {
+      return base64Image;
+    };
 
-  const handleThemeChange = (event) => {
-    setTheme(event.target.value);
-  }
+    const [userId, setUserId] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // save changes to backend
-  }
-
+  useEffect(() => {
+    // Retrieve the user ID from local storage or cookies
+    const storedUserId = localStorage.getItem('userId');
+  
+    if (storedUserId) {
+      setUserId(storedUserId);
+      console.log(storedUserId);
+    }
+  }, []);
   return (
-    <Container className={`restaurant ${theme}`}>
-      <Row>
-        <Col>
-          <img src={logo} alt={name}   style={{
-        width: 150,
-        height: 150,
-        borderRadius: "50%",
-        overflow: "hidden",
-        display: "flex",
-        justifyContent: "right",
-        alignItems: "right"}}  />
-        </Col>
-        <Col>
-          <h1>{name}</h1>
-        </Col>
-      </Row>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="restaurantName">
-          <Form.Label>Nom du restaurant:</Form.Label>
-          <Form.Control type="text" value={name} onChange={handleNameChange} />
-        </Form.Group>
-        <Form.Group controlId="restaurantLogo">
-          <Form.Label>Logo:</Form.Label>
-          <Form.Control type="file" accept="image/*" onChange={handleLogoChange}  />
-        </Form.Group>
-        <Form.Group controlId="restaurantTheme">
-          <Form.Label>Thème:</Form.Label>
-          <Form.Control as="select" value={theme} onChange={handleThemeChange}>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </Form.Control>
-        </Form.Group>
-        <TextField label="Nouveau mot de passe" fullWidth margin="normal" type="password" />
-<TextField
-               label="Confirmer le mot de passe"
-               fullWidth
-               margin="normal"
-               type="password"
-             />
+    <section style={{ backgroundColor: '#eee' }}>
+    <MDBContainer className="py-5">
+      
 
-        <Button variant="primary" type="submit">Enregistrer les modifications</Button>
-      </Form>
-    </Container>
+      <MDBRow>
+        <MDBCol lg="4">
+          <MDBCard className="mb-4">
+            <MDBCardBody className="text-center">
+              <MDBCardImage
+                src={convertImage(restaurant.log)}
+                alt="avatar"
+                className="rounded-circle"
+                style={{ width: '150px' }}
+                fluid />
+              <p className="text-muted mb-1"></p>
+              <p className="text-muted mb-4"></p>
+              <div className="d-flex justify-content-center mb-2">
+              <Button component="label">
+              <MDBCardText outline className="ms-1">modifier</MDBCardText>
+              <input type="file" hidden  onChange={handleImageChange}/>
+              </Button>
+                
+              </div>
+            </MDBCardBody>
+          </MDBCard>
+
+          <MDBCard className="mb-4 mb-lg-0">
+              <AjouteMap/>
+            </MDBCard>
+          
+        </MDBCol>
+        <MDBCol lg="8">
+          <MDBCard className="mb-4">
+            <MDBCardBody>
+              <MDBRow>
+                <MDBCol sm="3">
+                  <MDBCardText>Full Name</MDBCardText>
+                </MDBCol>
+                <MDBCol sm="9">
+                  <input type="text" id="name" class="form-control" name='name'  value={name} onChange={onInputChange}  />
+                </MDBCol>
+              </MDBRow>
+              <hr />
+              <MDBRow>
+                <MDBCol sm="3">
+                  <MDBCardText>Email</MDBCardText>
+                </MDBCol>
+                <MDBCol sm="9">
+                <input type="text" id="email" class="form-control"    />
+                </MDBCol>
+              </MDBRow>
+              <hr />
+              <MDBRow>
+                <MDBCol sm="3">
+                  <MDBCardText>Phone</MDBCardText>
+                </MDBCol>
+                <MDBCol sm="9">
+                <input type="text" id="form12" class="form-control"  />
+                </MDBCol>
+              </MDBRow>
+              <hr />
+              
+             
+              <MDBRow>
+                <MDBCol sm="3">
+                  <MDBCardText>Address</MDBCardText>
+                </MDBCol>
+                <MDBCol sm="9">
+                  <input type="text" id="address" class="form-control"  name='address'  value={address} onChange={onInputChange} />
+                  
+                </MDBCol>
+              </MDBRow>
+              <hr />
+              <MDBRow>
+              <MDBCol sm="9">
+              <button type="button" class="btn btn-primary" onClick={onSubmit}>AjoutER</button>
+              </MDBCol>
+              </MDBRow>
+            </MDBCardBody>
+          </MDBCard>
+
+        
+        </MDBCol>
+      </MDBRow>
+    </MDBContainer>
+  </section>
   );
 }
 

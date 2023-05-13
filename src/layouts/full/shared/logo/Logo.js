@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 import { Link } from 'react-router-dom';
-import image  from 'src/assets/images/logos/images.png';
+import image  from 'src/assets/images/logos/djerba.jpg';
 import { styled } from '@mui/material';
 
 const LinkStyled = styled(Link)(() => ({

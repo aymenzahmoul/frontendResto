@@ -6,7 +6,7 @@ import { setAuth } from '../../util/setAuth';
 export const Registration = (form, navigate)=>dispatch=>{
       axios.post('http://localhost:8080/authentication-management/register', form) 
       .then(res=>{
-        navigate('/login')
+        navigate('/auth/login')
         dispatch({
             type: ERRORS,
             payload: {}
@@ -20,14 +20,17 @@ export const Registration = (form, navigate)=>dispatch=>{
       })
 }
 
-export const LoginAction = (form, navigate)=>dispatch=>{
-    axios.post('/http://localhost:8080/authentication-management/login', form) 
+export const LoginAction = (form)=>dispatch=>{
+    axios.post('http://localhost:8080/authentication-management/login', form) 
     .then(res=>{
       const {token} = res.data
-      localStorage.setItem('jwt', token)
-      const decode = jwt_decode(token)
+      const {id} = res.data
+      localStorage.setItem('jwt', "Bearer_ "+ token)
+      localStorage.setItem('id', id)
+      const decode = jwt_decode("Bearer_ " +token)
       dispatch(setUser(decode))
-      setAuth(token)
+      console.log(decode)
+      
     })
     .catch(err=>{
         dispatch({
@@ -40,6 +43,7 @@ export const LoginAction = (form, navigate)=>dispatch=>{
 
 export const Logout = ()=>dispatch=>{
     localStorage.removeItem('jwt')
+    localStorage.removeItem('id')
     dispatch({
         type: SET_USER,
         payload: {}

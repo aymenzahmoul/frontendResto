@@ -28,7 +28,7 @@ import Form from 'react-bootstrap/Form';
     }, []);
   
     const loadCommandes = async () => {
-      const result = await axios.get('http://localhost:8080/commande-resources/command/all');
+      const result = await axios.get('http://localhost:8080/commande-resources/getAllCommand');
       setCommand(result.data);
     };
   
@@ -107,14 +107,10 @@ import Form from 'react-bootstrap/Form';
                     </TableCell>
                     <TableCell>
                         <Typography variant="subtitle2" fontWeight={600}>
-                            user
+                            description
                         </Typography>
                     </TableCell>
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            store
-                        </Typography>
-                    </TableCell>
+                
                     <TableCell align="right">
                         <Typography variant="subtitle2" fontWeight={600}>
                         prix
@@ -154,7 +150,7 @@ import Form from 'react-bootstrap/Form';
                             >
                                 <Box>
                                     <Typography variant="subtitle2" fontWeight={600}>
-                                        {product.address}
+                                        {product.commandeStatus}
                                     </Typography>
                                     <Typography
                                         color="textSecondary"
@@ -162,7 +158,7 @@ import Form from 'react-bootstrap/Form';
                                             fontSize: "13px",
                                         }}
                                     >
-                                        {product.nom}
+                                        
                                     </Typography>
                                 </Box>
                             </Box>
@@ -172,19 +168,12 @@ import Form from 'react-bootstrap/Form';
                                 {product.description}
                             </Typography>
                         </TableCell>
-                        <TableCell>
-                            <Chip
-                                sx={{
-                                    px: "4px",
-                                    backgroundColor: product.pbg,
-                                    color: "#fff",
-                                }}
-                                size="small"
-                                label={product.commandeStatus}
-                            ></Chip>
+                      
+                        <TableCell align="right">
+                            <Typography variant="h6">{product.total}</Typography>
                         </TableCell>
                         <TableCell align="right">
-                            <Typography variant="h6">${product.total}k</Typography>
+                            <Typography variant="h6">{product.nom}</Typography>
                         </TableCell>
                         <TableCell align="right">
                             <Typography variant="h6">{product.paymentMethod}</Typography>

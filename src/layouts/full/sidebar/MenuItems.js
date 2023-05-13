@@ -1,16 +1,8 @@
-import {
-  IconDevices, IconCommand, IconLayoutDashboard, IconLogin, IconMoodHappy, IconUsers, IconUserPlus ,IconBuildingStore,IconShoppingCartPlus,IconMoped, IconBrandMeta
-} from '@tabler/icons';
-
-
+import { IconCommand, IconLayoutDashboard, IconLogin, IconUsers, IconUserPlus, IconShoppingCartPlus, IconMoped, IconBrandMeta, IconBrandUnsplash, IconCategory } from '@tabler/icons';
 import { uniqueId } from 'lodash';
 
-const Menuitems = [
-  {
-    navlabel: true,
-    subheader: 'Home',
-  },
 
+const MenuItems = [
   {
     id: uniqueId(),
     title: 'Dashboard',
@@ -18,48 +10,24 @@ const Menuitems = [
     href: '/dashboard',
   },
   {
-    navlabel: true,
-    subheader: 'Utilities',
-  },
-  {
     id: uniqueId(),
-    title: 'Orders',
-    icon: IconShoppingCartPlus
-    ,
+    title: 'commande',
+    icon: IconShoppingCartPlus,
     href: '/orders',
   },
   {
     id: uniqueId(),
-    title: 'users',
-    icon: IconUsers
-    ,
-    href: '/ui/typography',
+    title: 'Users',
+    icon: IconUsers,
+    href: '/users',
+
   },
 
-
   {
     id: uniqueId(),
-    title: 'Couriers',
-    icon: IconMoped
-    ,
-    href: '/couriers',
-  },
-  {
-    id: uniqueId(),
-    title: 'Stores',
-    icon: IconBuildingStore
-    ,
-    href: '/Stores',
-  },
-  {
-    id: uniqueId(),
-    title: 'plats',
+    title: 'Plats',
     icon: IconCommand,
     href: '/produits',
-  },
-  {
-    navlabel: true,
-    subheader: 'Auth',
   },
   {
     id: uniqueId(),
@@ -74,34 +42,23 @@ const Menuitems = [
     href: '/auth/register',
   },
   {
-    navlabel: true,
-    subheader: 'Extra',
-  },
-  {
     id: uniqueId(),
-    title: 'Profil',
-    icon: IconMoodHappy,
-    href: '/profil',
-  },
-  {
-    id: uniqueId(),
-    title: 'chatting',
+    title: 'Chatting',
     icon: IconBrandMeta,
     href: '/chatting',
   },
   {
     id: uniqueId(),
-    title: 'category',
-    icon: IconUsers
-    ,
+    title: 'Category',
+    icon: IconCategory,
     href: '/category',
   },
   {
     id: uniqueId(),
-    title: 'Menu',
-    icon: IconDevices,
-    href: '/sample-page',
+    title: 'Stock',
+    icon: IconBrandUnsplash,
+    href: '/stock',
   },
 ];
 
-export default Menuitems;
+export default MenuItems;

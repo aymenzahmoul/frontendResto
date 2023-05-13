@@ -1,35 +1,33 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from "react-router-dom";
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
- 
-    </Typography>
-  );
+import { Link, useNavigate } from "react-router-dom";
+import {
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBInput,
+  MDBIcon,
+  MDBCheckbox
 }
+from 'mdb-react-ui-kit';
+import photo from './../../assets/images/logos/delivery.gif'
 
-const theme = createTheme();
-
+import { Wizard } from "react-wizardry";
+import "react-wizardry/dist/react-wizardry.css";
+import './login.css';
+import { useDispatch,useSelector  } from 'react-redux';
+import { Registration } from 'src/redux/actions/authActions';
+import images from '../../assets/images/logos/login.png'
 export default function SignUp() {
-  let navigate = useNavigate();
+  
   const [user, setUser] = useState({
     username: '',
     password: '',
-    authority: '',
+    authority:'RESTAURANT_AUTHORITY',
     
   });
   const {  username, password ,authority} = user;
@@ -38,101 +36,139 @@ export default function SignUp() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit1 = async (e) => {
     e.preventDefault();
     await axios.post("http://localhost:8080/authentication-management/register", user);
-    navigate("/auth/login");
+   
   };
+  const [form, setForm] = useState({
+  username: '',
+  password: '',
+  authority:'RESTAURANT_AUTHORITY',})
+  const errors = useSelector(state=>state.errors)
+  const dispatch=useDispatch()
+  const Navigate = useNavigate()
+  const onChangeHandler = (e)=>{
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    })
+  }
 
+  const onSubmit = (e)=>{
+  e.preventDefault();
+dispatch(Registration(form,Navigate))
+  }
+  
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          
-          <Box component="form" noValidate  sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} >
-                <TextField
-                  autoComplete="given-name"
-                  name="username"
-                  required
-                  fullWidth
-                  id="username"
-                  label="username"
-                  autoFocus
-                  value={username} 
-                  onChange={(e) => onInputChange(e)}
-                />
-              </Grid>
+   /* <div className="container">
+    <div className="row">
+      <div className="col-md-6 offset-md-3">
+        <h2 className="text-center text-dark mt-5"> </h2>
+       
+        <div className="card my-5">
 
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password} 
-                  onChange={(e) => onInputChange(e)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="authority"
-                  label="authority"
-                  type="authority"
-                  id="authority"
-                  
-                  value={authority} 
-                  onChange={(e) => onInputChange(e)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={onSubmit}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/auth/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-         
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
-    </ThemeProvider>
+        <div className="App">
+       
+
+    <Wizard
+      onFinish={(val) => console.log(val)}
+      strict={false}
+      pages={[
+        {
+          title: "register",
+          fields: [
+            {
+              label: "First Name",
+              name: "firstName",
+              type: "text",
+              isRequired: true
+            },
+            {
+              label: "Last Name",
+              name: "lastName",
+              type: "text"
+            },
+        
+            {
+              label: "Email",
+              name: "email",
+              type: "email",
+              value:{username} ,
+              onChange:{onInputChange},
+              isRequired: true
+            },
+            {
+              name: "Phone number",
+              label: "Phone",
+              type: "phone"
+            }
+          ]
+        },
+        {
+          title: "Employment",
+          fields: [
+            {
+              label: "Company Name",
+              name: "companyName",
+              type: "text"
+            },
+            {
+              label: "Designation",
+              name: "designation",
+              type: "text"
+            }
+          ]
+        }, 
+      ]}
+    />
+  </div>
+        </div>
+
+      </div>
+    </div>
+  </div>*/
+  <div className="container">
+    <div className="row">
+      <div className="col-md-6 offset-md-3">
+        <h2 className="text-center text-dark mt-5"> </h2>
+       
+        <div className="card my-5">
+
+          <form className="card-body cardbody-color p-lg-4" onSubmit={onSubmit}>
+
+            <div className="text-center">
+              <img src={images} class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                width="200px" alt="profile"/>
+            </div>
+
+            <div className="mb-3">
+              <input type="text" class="form-control" id="Username" aria-describedby="text" name='username'
+                onChange={onChangeHandler}
+                placeholder="User Name"/>
+            </div>
+            <div className="mb-3">
+              
+              <input type="password" class="form-control" id="password" placeholder="password" name='password' 
+                onChange={onChangeHandler}/>
+            </div>
+            <div className="mb-3">
+              
+              <input type="password" class="form-control" id="password" placeholder="password" name='password' 
+                onChange={onChangeHandler}/>
+            </div>
+            <div className="text-center">
+              <button type="submit" class="btn btn-color px-5 mb-5 w-100" >register</button>
+              </div>
+            <div id="emailHelp" class="form-text text-center mb-5 text-dark">   <Link to="/auth/login" className="text-dark fw-bold">
+            have a compte
+    </Link>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
   );
 }

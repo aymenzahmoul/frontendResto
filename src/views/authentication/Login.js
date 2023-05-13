@@ -1,30 +1,26 @@
 import React ,{useState} from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
-import {  useNavigate } from "react-router-dom";
-function Copyright(props) {
- 
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-
-    </Typography>
-  );
+import {
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBInput,
+  MDBIcon,
+  MDBCheckbox
 }
-
-const theme = createTheme();
-
+from 'mdb-react-ui-kit';
+import axios from 'axios';
+import './login.css';
+import photo from '../../assets/images/logos/Serious.gif'
+import { useNavigate } from 'react-router';
+import { login } from 'src/Service/LoginService';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { LoginAction } from 'src/redux/actions/authActions';
+import images from '../../assets/images/logos/login.png'
 export default function SignInSide() {
   let navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -46,11 +42,9 @@ export default function SignInSide() {
   function handleSubmit(event) {
     event.preventDefault();
   
-    axios.post("http://localhost:8080/authentication-management/login", {
-      username: username,
-      password: password
-    })
-    navigate("/")
+    login( username , password
+    )
+    navigate('/')
     
     .then(response => {
       console.log(response.data);
@@ -59,98 +53,103 @@ export default function SignInSide() {
       handleErrorMessage(error.response.data.message);
     });
   }
+  const [form, setForm] = useState({})
+  const errors = useSelector(state=>state.errors)
+  const dispatch=useDispatch()
+  const Navigate = useNavigate()
+  
+  const onChangeHandler = (e)=>{
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    })
+  }
 
+  const onSubmit = (e)=>{
+  e.preventDefault();
+  dispatch(LoginAction(form))
+  }
+  
   return (
-    <ThemeProvider theme={theme}>
-      <Grid container component="main" sx={{ height: '100vh' }}>
-        <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: 'url(https://source.unsplash.com/random)',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box component="form" noValidate  sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="username Address"
-                name="username"
-                autoComplete="username"
-                autoFocus
-                value={username} 
-                onChange={handleUsernameChange}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                value={password} 
-                onChange={handlePasswordChange}
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                onClick={handleSubmit}
+    
+   /*<MDBContainer fluid>
 
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
-              {errorMsg && <p>{errorMsg}</p>}
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <Copyright sx={{ mt: 5 }} />
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </ThemeProvider>
+    <MDBCard className='text-black m-5' style={{borderRadius: '25px'}}>
+      <MDBCardBody>
+        <MDBRow>
+          <MDBCol md='10' lg='6' className='order-2 order-lg-1 d-flex flex-column align-items-center'>
+
+            <p classNAme="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+
+            <div className="d-flex flex-row align-items-center mb-4 ">
+              <MDBIcon fas icon="user me-3" size='lg'/>
+              <MDBInput label='Your Name' id='username' name='username'  type='text' className='w-100' value={username} 
+                onChange={handleUsernameChange}/>
+            </div>
+
+           
+
+            <div className="d-flex flex-row align-items-center mb-4">
+              <MDBIcon fas icon="lock me-3" size='lg'/>
+              <MDBInput label='Password' id='password' type='password' name='password'  value={password} 
+                onChange={handlePasswordChange}/>
+            </div>
+
+           
+
+            <div className='mb-4'>
+              <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Subscribe to our newsletter' />
+            </div>
+
+            <MDBBtn className='mb-4' size='lg' onClick={handleSubmit}>login</MDBBtn>
+
+          </MDBCol>
+
+          <MDBCol md='10' lg='6' className='order-1 order-lg-2 d-flex align-items-center'>
+            <MDBCardImage src={photo} fluid/>
+          </MDBCol>
+
+        </MDBRow>
+      </MDBCardBody>
+    </MDBCard>
+
+  </MDBContainer>*/
+  <div className="container">
+    <div className="row">
+      <div className="col-md-6 offset-md-3">
+        <h2 className="text-center text-dark mt-5"> </h2>
+       
+        <div className="card my-5">
+
+          <form className="card-body cardbody-color p-lg-5" onSubmit={onSubmit}>
+
+            <div className="text-center">
+              <img src={images} class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                width="200px" alt="profile"/>
+            </div>
+
+            <div className="mb-3">
+              <input type="text" class="form-control" id="Username" aria-describedby="text" name='username'
+                onChange={onChangeHandler}
+                placeholder="User Name"/>
+            </div>
+            <div className="mb-3">
+              
+              <input type="password" class="form-control" id="password" placeholder="password" name='password'  
+                onChange={onChangeHandler}/>
+            </div>
+            <div className="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100" >Login</button></div>
+            <div id="emailHelp" class="form-text text-center mb-5 text-dark">Not
+              Registered?     <Link to="/auth/register" className="text-dark fw-bold">
+      Create an Account
+    </Link>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
   );
 }
