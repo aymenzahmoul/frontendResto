@@ -1,189 +1,239 @@
-import React from 'react';
-import axios from "axios";
-import  { useEffect,useState } from "react";
-
-import {
-    Typography, Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Chip,   
-} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import image from '../../assets/images/logos/default.jpg';
+import test from './Command';
+import { Box } from '@mui/material';
 import DashboardCard from '../../components/shared/DashboardCard';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Form from 'react-bootstrap/Form';
 
+export default function Orders() {
+  const [command, setCommand] = useState([]);
+  const [commands, setCommands] = useState([]);
+  const [Restaurants, setRestaurants] = useState('');
 
- 
-  export default function Orders() {
-    const [command, setCommand] = useState([]);
-   useEffect(() => {
-      loadCommandes();
-    }, []);
-  
-    const loadCommandes = async () => {
-      const result = await axios.get('http://localhost:8080/commande-resources/getAllCommand');
-      setCommand(result.data);
-    };
-  
-    
-  return (<>
-    <Card sx={{ maxWidth: 345 }}>
-    
-    <CardContent>
-      <Typography gutterBottom variant="h5" component="div">
-        Filters
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-      <Box
-      component="form"
-      sx={{
-        '& > :not(style)': { m: 1, width: '25ch' },
-      }}
-      noValidate
-      autoComplete="off"
-    >
-      <TextField id="outlined-basic" label="Search" variant="outlined"/>
-      <Form.Select aria-label="Default select example" required >
-      <option>status</option>
-  
-      
-    </Form.Select>
-      <Form.Select aria-label="Default select example" required >
-      <option>stores</option>
-     
-      
-    </Form.Select>
-    <Form.Select aria-label="Default select example">
-      <option>users</option>
-      <option value="1">Yes</option>
-      <option value="2">No</option>
-      
-    </Form.Select>
-    </Box>
-      
-        
-    
-        
-  
-      
-      </Typography>
-    </CardContent>
-    
-     
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    axios
+      .get(`http://localhost:8080/restaurant-configuration/restaurant/getRestaurantIdByUserId/${userId}`)
+      .then(response => {
+        setRestaurants(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
-    <CardActions>
-      <Button size="small">filter</Button>
-      
-    </CardActions>
-  </Card>
-  <br></br>
-    <DashboardCard title="Orders">
-    <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
-        <Table
-            aria-label="simple table"
-            sx={{
-                whiteSpace: "nowrap",
-                mt: 2
-            }}
-        >
-            <TableHead>
-                <TableRow>
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            Order num
-                        </Typography>
-                    </TableCell>
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            status
-                        </Typography>
-                    </TableCell>
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            description
-                        </Typography>
-                    </TableCell>
-                
-                    <TableCell align="right">
-                        <Typography variant="subtitle2" fontWeight={600}>
-                        prix
-                        </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            Produits
-                        </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                        <Typography variant="subtitle2" fontWeight={600}>
-                        paymentMethod
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {command.map((product) => (
-                    <TableRow key={product.address}>
-                        <TableCell>
-                            <Typography
-                                sx={{
-                                    fontSize: "15px",
-                                    fontWeight: "500",
-                                }}
-                            >
-                                {product.userId}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Box>
-                                    <Typography variant="subtitle2" fontWeight={600}>
-                                        {product.commandeStatus}
-                                    </Typography>
-                                    <Typography
-                                        color="textSecondary"
-                                        sx={{
-                                            fontSize: "13px",
-                                        }}
-                                    >
-                                        
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </TableCell>
-                        <TableCell>
-                            <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                {product.description}
-                            </Typography>
-                        </TableCell>
-                      
-                        <TableCell align="right">
-                            <Typography variant="h6">{product.total}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                            <Typography variant="h6">{product.nom}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                            <Typography variant="h6">{product.paymentMethod}</Typography>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    </Box>
-</DashboardCard>
-</>
+  let idd = Restaurants.id;
+
+  useEffect(() => {
+    loadCommande(idd);
+  }, [idd]);
+
+  const loadCommande = async id => {
+    const result = await axios.get(`http://localhost:8080/commande-resources/getAllCommandBy/${id}`);
+    setCommand(result.data);
+  };
+
+  useEffect(() => {
+    if (command.id) {
+      axios
+        .get(`http://localhost:8080/commande-resources/command/getCommandeItems/${command.id}/items`)
+        .then(response => {
+          setCommands(response.data);
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [command.id]);
+
+  const [editMode, setEditMode] = useState(false);
+  const [editedUsers, setEditedUsers] = useState([]);
+
+  const convertImage = base64Image => {
+    return base64Image;
+  };
+
+  const handleEditClick = () => {
+    setEditMode(!editMode);
+    if (editMode) {
+      console.log('Saving changes:', editedUsers);
+    } else {
+      setEditedUsers([...command]);
+    }
+  };
+
+  const handleInputChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedUsers = [...editedUsers];
+    updatedUsers[index][name] = value;
+    setEditedUsers(updatedUsers);
+  };
+
+  return (
+    <>
+      <br />
+      <DashboardCard title="Orders">
+        <MDBTable align="middle">
+          <MDBTableHead>
+            <tr>
+              <th scope="col">Order num</th>
+              <th scope="col">Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">prix</th>
+              <th scope="col">date</th>
+              <th scope="col">paymentMethod</th>
+              <th scope="col">action</th>
+            </tr>
+          </MDBTableHead>
+          <MDBTableBody>
+            {command.map((user, index) => (
+              <tr key={user.userId}>
+                <td>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      name="authority"
+                      value={user.userId}
+                      onChange={e => handleInputChange(e, index)}
+                      className="form-control"
+                    />
+                  ) : (
+                    <>{user.userId}</>
+                  )}
+                </td>
+                <td>
+                  <div className="d-flex align-items-center">
+                    <img
+                      src={image}
+                      alt=""
+                      style={{ width: '45px', height: '45px' }}
+                      className="rounded-circle"
+                    />
+                    <div className="ms-3">
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="username"
+                          value={user.username}
+                          onChange={e => handleInputChange(e, index)}
+                          className="form-control"
+                        />
+                      ) : (
+                        <p className="fw-bold mb-1">{user.nom}</p>
+                      )}
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  {editMode ? (
+                    <select
+                      name="commandeStatus"
+                      value={user.commandeStatus}
+                      onChange={e => handleInputChange(e, index)}
+                      className="form-select"
+                    >
+                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="CONFIRMED">CONFIRMED</option>
+                      <option value="CANCELED">CANCELED</option>
+                    </select>
+                  ) : (
+                    <>
+                      {(() => {
+                        switch (String(user.commandeStatus)) {
+                          case 'COMPLETED':
+                            return (
+                              <MDBBadge color="success" pill>
+                                {String(user.commandeStatus)}
+                              </MDBBadge>
+                            );
+                          case 'PENDING':
+                            return (
+                              <MDBBadge color="warning" pill>
+                                {String(user.commandeStatus)}
+                              </MDBBadge>
+                            );
+                          case 'CONFIRMED':
+                            return (
+                              <MDBBadge color="info" pill>
+                                {String(user.commandeStatus)}
+                              </MDBBadge>
+                            );
+                          case 'CANCELED':
+                            return (
+                              <MDBBadge color="danger" pill>
+                                {String(user.commandeStatus)}
+                              </MDBBadge>
+                            );
+                          default:
+                            return null;
+                        }
+                      })()}
+                    </>
+                  )}
+                </td>
+
+                <td>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      name="total"
+                      value={user.total}
+                      onChange={e => handleInputChange(e, index)}
+                      className="form-control"
+                    />
+                  ) : (
+                    <>{user.total}</>
+                  )}
+                </td>
+                <td>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      name="authority"
+                      value={user.description}
+                      onChange={e => handleInputChange(e, index)}
+                      className="form-control"
+                    />
+                  ) : (
+                    <>{user.createdAt}</>
+                  )}
+                </td>
+                <td>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      name="authority"
+                      value={user.paymentMethod}
+                      onChange={e => handleInputChange(e, index)}
+                      className="form-control"
+                    />
+                  ) : (
+                    <>{user.paymentMethod}</>
+                  )}
+                </td>
+                <td>
+                  {editMode ? (
+                    <MDBBtn color="link" rounded size="sm" onClick={handleEditClick}>
+                      Save
+                    </MDBBtn>
+                  ) : (
+                    <MDBBtn color="link" rounded size="sm" onClick={handleEditClick}>
+                      Edit
+                    </MDBBtn>
+                  )}
+                  <MDBBtn color="danger" rounded size="sm">
+                    Delete
+                  </MDBBtn>
+                </td>
+              </tr>
+            ))}
+          </MDBTableBody>
+        </MDBTable>
+      </DashboardCard>
+    </>
   );
-};
+}

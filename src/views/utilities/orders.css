@@ -1,0 +1,10 @@
+.card {
+    background: var(--surface-card);
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+.product-image {
+    width: 50px; /* Adjust the size as needed */
+    height: auto;
+  }

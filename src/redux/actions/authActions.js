@@ -42,8 +42,8 @@ export const LoginAction = (form)=>dispatch=>{
 
 
 export const Logout = ()=>dispatch=>{
-    localStorage.removeItem('jwt')
-    localStorage.removeItem('id')
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('userId')
     dispatch({
         type: SET_USER,
         payload: {}

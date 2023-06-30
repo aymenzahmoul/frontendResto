@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Box,
@@ -22,9 +22,12 @@ import { Logout } from 'src/redux/actions/authActions';
 
 
 const Profile = () => {
+  let navigate = useNavigate()
   const dispatch = useDispatch()
   const LogoutHanlder = ()=>{
      dispatch(Logout())
+     navigate('/')
+     
   }
   const [anchorEl2, setAnchorEl2] = useState(null);
   const handleClick2 = (event) => {
@@ -33,9 +36,24 @@ const Profile = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
-  const [restaurant, setRestaurant] = useState([])
+
+  const [restaurants, setRestaurants] = useState([]);
   useEffect(() => {
-      axios.get('http://localhost:8080/restaurant-configuration/restaurant/getRestaurantById/1')
+    const userId = localStorage.getItem('userId');
+    axios
+      .get(`http://localhost:8080/restaurant-configuration/restaurant/getRestaurantIdByUserId/${userId}`)
+      .then(response => {
+        setRestaurants(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
+  const [restaurant, setRestaurant] = useState([])
+  let idd:restaurants.id
+  useEffect(() => {
+      axios.get('http://localhost:8080/restaurant-configuration/restaurant/getRestaurantById/')
         .then(response => {
           setRestaurant(response.data);
         })

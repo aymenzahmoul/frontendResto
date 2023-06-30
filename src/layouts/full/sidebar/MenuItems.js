@@ -1,4 +1,4 @@
-import { IconCommand, IconLayoutDashboard, IconLogin, IconUsers, IconUserPlus, IconShoppingCartPlus, IconMoped, IconBrandMeta, IconBrandUnsplash, IconCategory } from '@tabler/icons';
+import { IconCommand, IconLayoutDashboard, IconLogin, IconUsers, IconUserPlus, IconShoppingCartPlus, IconMoped, IconBrandMeta, IconBrandUnsplash, IconCategory, IconMail } from '@tabler/icons';
 import { uniqueId } from 'lodash';
 
 
@@ -25,11 +25,17 @@ const MenuItems = [
 
   {
     id: uniqueId(),
-    title: 'Plats',
+    title: 'Menus',
     icon: IconCommand,
     href: '/produits',
   },
   {
+    id: uniqueId(),
+    title: 'Contact',
+    icon: IconMail,
+    href: 'contact',
+  },
+    {
     id: uniqueId(),
     title: 'Login',
     icon: IconLogin,

@@ -1,120 +1,164 @@
-import React, { useState } from 'react';
-import image from "../../assets/images/profile/vecteur-d-icône-de-profil-avatar-par-défaut-image-sociale-utilisateur-médias-social-182145777.jpg";
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import React, { useState, useEffect } from 'react';
+import {
+  MDBBadge,
+  MDBBtn,
+  MDBTable,
+  MDBTableHead,
+  MDBTableBody,
+} from 'mdb-react-ui-kit';
 import DashboardCard from 'src/components/shared/DashboardCard';
-import useFetchData from '../../costumHook/fatchdata';
+import axios from 'axios';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  Box,
+} from '@mui/material';
+import Button from '@mui/material/Button';
+import { MenuItem } from '@material-ui/core';
+
 
 export default function TypographyPage() {
-  const [users] = useFetchData('http://localhost:8080/authentication-management/users/all');
-  const [editMode, setEditMode] = useState(false);
-  const [editedUsers, setEditedUsers] = useState([]);
+  const [users, setUsers] = useState([]);
+ 
+ 
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/authentication-management/users/all')
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
   const convertImage = (base64Image) => {
-    return base64Image;
+    return 'data:image/jpg;base64,' + base64Image;
   };
-  const handleEditClick = () => {
-    setEditMode(!editMode);
-    if (editMode) {
-      console.log('Saving changes:', editedUsers);
-    } else {
-      setEditedUsers([...users]);
+
+
+  async function updatedUsers(userId, updateUserDto) {
+    try {
+      const response = await fetch(`http://localhost:8080/authentication-management/${userId}/authority`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateUserDto),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        return { success: true, data };
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: error.message };
+    }
+  }
+  
+  const handleUpdateProfile = () => {
+ 
+  
+    updatedUsers(selectedUser.id, selectedUser.enabled)
+      .then(isUpdated => {
+        if (isUpdated) {
+          window.location.reload(true);
+          console.log(selectedUser.enabled);
+          console.log('User info updated successfully');
+        } else {
+          console.log('Failed to update user info');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+  
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/meal-configuration/meal/delete/${id}`);
+      const updatedMeal = users.filter((p) => p.id !== id);
+      setUsers(updatedMeal);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleInputChange = (e, index) => {
-    const { name, value } = e.target;
-    const updatedUsers = [...editedUsers];
-    updatedUsers[index][name] = value;
-    setEditedUsers(updatedUsers);
-  };
+
 
   return (
     <>
       <DashboardCard title="Users">
-        <MDBTable align='middle'>
+        <MDBTable align="middle">
           <MDBTableHead>
             <tr>
-              <th scope='col'>Name</th>
-              <th scope='col'>Status</th>
-              <th scope='col'>Role</th>
-              <th scope='col'>Actions</th>
+              <th scope="col">Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Role</th>
+              <th scope="col">Actions</th>
             </tr>
           </MDBTableHead>
           <MDBTableBody>
             {users.map((user, index) => (
               <tr key={user.id}>
                 <td>
-                  <div className='d-flex align-items-center'>
+                  <div className="d-flex align-items-center">
                     <img
                       src={convertImage(user.image)}
-                      alt=''
+                      alt=""
                       style={{ width: '45px', height: '45px' }}
-                      className='rounded-circle'
+                      className="rounded-circle"
                     />
-                    <div className='ms-3'>
-                      {editMode ? (
-                        <input
-                          type='text'
-                          name='username'
-                          value={user.username}
-                          onChange={(e) => handleInputChange(e, index)}
-                          className='form-control'
-                        />
-                      ) : (
-                        <p className='fw-bold mb-1'>{user.username}</p>
-                      )}
-                      <p className='text-muted mb-0'>{user.email}</p>
+                    <div className="ms-3">
+                      <p className="fw-bold mb-1">{user.username}</p>
+                      <p className="text-muted mb-0">{user.email}</p>
                     </div>
                   </div>
                 </td>
                 <td>
-                  {editMode ? (
-                    <select
-                      name='enabled'
-                      value={user.enabled}
-                      onChange={(e) => handleInputChange(e, index)}
-                      className='form-select'
-                    >
-                      <option value={true}>true</option>
-                      <option value={false}>false</option>
-                    </select>
-                  ) : (
-                    <>
-                      {String(user.enabled) === 'true' ? (
-                        <MDBBadge color='success' pill>
-                          {String(user.enabled)}
-                        </MDBBadge>
-                      ) : (
-                        <MDBBadge color='danger' pill>
-                          {String(user.enabled)}
-                        </MDBBadge>
-                      )}
-                    </>
-                  )}
+                  <>
+                    {String(user.enabled) === 'true' ? (
+                      <MDBBadge color="success" pill>
+                        {String(user.enabled)}
+                      </MDBBadge>
+                    ) : (
+                      <MDBBadge color="danger" pill>
+                        {String(user.enabled)}
+                      </MDBBadge>
+                    )}
+                  </>
                 </td>
+                <td>{user.authority}</td>
                 <td>
-                  {editMode ? (
-                    <input
-                      type='text'
-                      name='authority'
-                      value={user.authority}
-                      onChange={(e) => handleInputChange(e, index)}
-                      className='form-control'
-                    />
-                  ) : (
-                    <>{user.authority}</>
-                  )}
-                </td>
-                <td>
-                  {editMode ? (
-                    <MDBBtn color='link' rounded size='sm' onClick={handleEditClick}>
-                      Save
-                    </MDBBtn>
-                  ) : (
-                    <MDBBtn color='link' rounded size='sm' onClick={handleEditClick}>
-                      Edit
-                    </MDBBtn>
-                  )}
-                  <MDBBtn color='danger' rounded size='sm'>
+                  <MDBBtn
+                    color="link"
+                    value={selectedUser}
+                    name='selectedUser'
+                    rounded
+                    size="sm"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setEditDialogOpen(true);
+                    }}
+                  >
+                    Edit
+                  </MDBBtn>
+                  <MDBBtn
+                    color="danger"
+                    rounded
+                    size="sm"
+                    onClick={() => handleDelete(user.id)}
+                  >
                     Delete
                   </MDBBtn>
                 </td>
@@ -123,6 +167,45 @@ export default function TypographyPage() {
           </MDBTableBody>
         </MDBTable>
       </DashboardCard>
+
+      {editDialogOpen && (
+        <Dialog
+          open={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+        >
+          <DialogTitle>Modifier l'utilisateur</DialogTitle>
+<DialogContent>
+<Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  <Grid container spacing={6}>
+ 
+    <Grid item xs={12}>
+    
+        <InputLabel id="demo-simple-select-label">Activation</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={String(selectedUser?.enabled)}
+          onChange={(e) => setSelectedUser({ ...selectedUser, enabled: e.target.value === 'true' })}
+        >
+          <MenuItem value="true">Activé</MenuItem>
+          <MenuItem value="false">Désactivé</MenuItem>
+        </Select>
+        
+    </Grid>
+    <Grid item xs={12}>
+      <Button variant="contained" onClick={handleUpdateProfile}>
+        Enregistrer
+      </Button>
+      
+    </Grid>
+   
+  </Grid>
+ 
+  </Box>
+</DialogContent>
+
+        </Dialog>
+      )}
     </>
   );
 }
